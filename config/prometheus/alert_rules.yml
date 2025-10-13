@@ -1,0 +1,162 @@
+groups:
+  - name: carrental_alerts
+    rules:
+      # High-level service availability
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.instance }} is down"
+          description: "{{ $labels.job }} service on {{ $labels.instance }} has been down for more than 1 minute."
+
+      # API Gateway specific alerts
+      - alert: APIGatewayHighErrorRate
+        expr: (rate(http_requests_total{job="api-gateway",code=~"5.."}[5m]) / rate(http_requests_total{job="api-gateway"}[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API Gateway high error rate"
+          description: "API Gateway error rate is above 5% for more than 5 minutes"
+
+      - alert: APIGatewayHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="api-gateway"}[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API Gateway high latency"
+          description: "API Gateway 95th percentile latency is above 1 second"
+
+      # Database alerts
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database is down for more than 1 minute"
+
+      - alert: PostgreSQLHighConnections
+        expr: (pg_stat_database_numbackends / pg_settings_max_connections) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL high connection usage"
+          description: "PostgreSQL connection usage is above 80%"
+
+      - alert: PostgreSQLSlowQueries
+        expr: increase(pg_stat_database_tup_fetched[1m]) / increase(pg_stat_database_tup_returned[1m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL slow queries detected"
+          description: "PostgreSQL is experiencing slow queries"
+
+      # Redis alerts
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance is down for more than 1 minute"
+
+      - alert: RedisHighMemoryUsage
+        expr: (redis_memory_used_bytes / redis_memory_max_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is above 90%"
+
+      # System resource alerts
+      - alert: HighCPUUsage
+        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 90% on {{ $labels.instance }}"
+
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage is above 85% on {{ $labels.instance }} for {{ $labels.mountpoint }}"
+
+      # Application-specific alerts
+      - alert: HighRequestRate
+        expr: rate(http_requests_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "High request rate detected"
+          description: "Request rate is above 1000 requests/second on {{ $labels.job }}"
+
+      - alert: UserServiceErrors
+        expr: rate(http_requests_total{job="user-service",code=~"5.."}[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "User service experiencing errors"
+          description: "User service error rate is above 0.1 requests/second"
+
+      - alert: VehicleServiceErrors
+        expr: rate(http_requests_total{job="vehicle-service",code=~"5.."}[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Vehicle service experiencing errors"
+          description: "Vehicle service error rate is above 0.1 requests/second"
+
+      - alert: BookingServiceErrors
+        expr: rate(http_requests_total{job="booking-service",code=~"5.."}[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Booking service experiencing errors"
+          description: "Booking service error rate is above 0.1 requests/second"
+
+      # Container alerts
+      - alert: ContainerHighMemoryUsage
+        expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container high memory usage"
+          description: "Container {{ $labels.name }} memory usage is above 90%"
+
+      - alert: ContainerRestartLoop
+        expr: increase(container_start_time_seconds[1h]) > 4
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container restart loop detected"
+          description: "Container {{ $labels.name }} has restarted more than 4 times in the last hour"

@@ -1,0 +1,63 @@
+# Example terraform.tfvars for AWS deployment
+# Copy this file to terraform.tfvars and customize the values
+
+# Project Configuration
+project_name = "carrental"
+environment  = "prod"
+aws_region   = "us-west-2"
+
+# Network Configuration
+vpc_cidr = "10.0.0.0/16"
+public_subnet_cidrs = [
+  "10.0.1.0/24",
+  "10.0.2.0/24"
+]
+private_subnet_cidrs = [
+  "10.0.10.0/24",
+  "10.0.20.0/24"
+]
+
+# Security
+enable_deletion_protection = true
+
+# Database Configuration
+postgres_version           = "15.4"
+postgres_instance_class    = "db.t3.micro"    # Change to db.r5.large for production
+postgres_allocated_storage = 20
+postgres_max_allocated_storage = 100
+postgres_db_name          = "carrental"
+postgres_username         = "postgres"
+postgres_password         = "your-super-secure-database-password"
+backup_retention_period   = 7
+backup_window             = "03:00-04:00"
+maintenance_window        = "sun:04:00-sun:05:00"
+
+# Redis Configuration
+redis_node_type       = "cache.t3.micro"    # Change to cache.r5.large for production
+redis_num_cache_nodes = 1
+redis_auth_token      = "your-super-secure-redis-password"
+
+# ECS Configuration
+api_gateway_cpu    = 512
+api_gateway_memory = 1024
+service_cpu        = 256
+service_memory     = 512
+desired_capacity   = 2
+max_capacity       = 10
+min_capacity       = 1
+
+# Application Configuration
+jwt_secret   = "your-super-secure-jwt-secret-at-least-32-characters-long"
+cors_origins = "https://yourdomain.com,https://admin.yourdomain.com"
+log_retention_days = 30
+
+# Domain Configuration (optional)
+domain_name     = "yourdomain.com"
+certificate_arn = "arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+
+# Email Configuration
+email_smtp_host = "smtp.gmail.com"
+email_smtp_port = "587"
+email_username  = "your-email@gmail.com"
+email_password  = "your-app-specific-password"
+email_from      = "noreply@yourdomain.com"

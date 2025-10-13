@@ -1,0 +1,145 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: carrental_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: carrental
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - carrental-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: carrental_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - carrental-network
+
+  # User Service
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: carrental_user_service
+    environment:
+      DATABASE_URL: postgres://user_user:user_pass@postgres:5432/user_db?sslmode=disable
+      PORT: 8001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - carrental-network
+    restart: unless-stopped
+
+  # Vehicle Service
+  vehicle-service:
+    build:
+      context: ./vehicle-service
+      dockerfile: Dockerfile
+    container_name: carrental_vehicle_service
+    environment:
+      DATABASE_URL: postgres://vehicle_user:vehicle_pass@postgres:5432/vehicle_db?sslmode=disable
+      PORT: 8002
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8002:8002"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - carrental-network
+    restart: unless-stopped
+
+  # Booking Service
+  booking-service:
+    build:
+      context: ./booking-service
+      dockerfile: Dockerfile
+    container_name: carrental_booking_service
+    environment:
+      DATABASE_URL: postgres://booking_user:booking_pass@postgres:5432/booking_db?sslmode=disable
+      PORT: 8003
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      USER_SERVICE_URL: http://user-service:8001
+      VEHICLE_SERVICE_URL: http://vehicle-service:8002
+    ports:
+      - "8003:8003"
+    depends_on:
+      - postgres
+      - redis
+      - user-service
+      - vehicle-service
+    networks:
+      - carrental-network
+    restart: unless-stopped
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: carrental_notification_service
+    environment:
+      DATABASE_URL: postgres://notification_user:notification_pass@postgres:5432/notification_db?sslmode=disable
+      PORT: 8004
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      EMAIL_SMTP_HOST: smtp.gmail.com
+      EMAIL_SMTP_PORT: 587
+      EMAIL_FROM: noreply@carrental.com
+    ports:
+      - "8004:8004"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - carrental-network
+    restart: unless-stopped
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: carrental_api_gateway
+    environment:
+      PORT: 8000
+      USER_SERVICE_URL: http://user-service:8001
+      VEHICLE_SERVICE_URL: http://vehicle-service:8002
+      BOOKING_SERVICE_URL: http://booking-service:8003
+      NOTIFICATION_SERVICE_URL: http://notification-service:8004
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - user-service
+      - vehicle-service
+      - booking-service
+      - notification-service
+    networks:
+      - carrental-network
+    restart: unless-stopped
+
+networks:
+  carrental-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,0 +1,55 @@
+# Example terraform.tfvars for GCP deployment
+# Copy this file to terraform.tfvars and customize the values
+
+# Project Configuration
+project_id   = "your-gcp-project-id"
+project_name = "carrental"
+environment  = "prod"
+region       = "us-west1"
+zone         = "us-west1-a"
+alternate_zone = "us-west1-b"
+
+# Network Configuration
+public_subnet_cidr  = "10.0.1.0/24"
+private_subnet_cidr = "10.0.2.0/24"
+gke_pods_cidr      = "10.1.0.0/16"
+gke_services_cidr  = "10.2.0.0/16"
+
+# Security
+enable_deletion_protection = true
+
+# GKE Configuration
+node_count        = 2
+min_node_count    = 1
+max_node_count    = 10
+node_machine_type = "e2-standard-2"  # Change to e2-standard-4 for production
+node_disk_size    = 50
+use_preemptible   = false  # Set to true for cost savings in dev
+
+# Database Configuration
+postgres_tier              = "db-f1-micro"  # Change to db-standard-1 for production
+postgres_availability_type = "ZONAL"  # Change to "REGIONAL" for production HA
+postgres_disk_size         = 20
+postgres_max_disk_size     = 100
+postgres_db_name          = "carrental"
+postgres_username         = "postgres"
+postgres_password         = "your-super-secure-database-password"
+backup_retention_days     = 7
+
+# Redis Configuration
+redis_tier        = "BASIC"  # Change to "STANDARD_HA" for production
+redis_memory_size = 1
+
+# Application Configuration
+jwt_secret   = "your-super-secure-jwt-secret-at-least-32-characters-long"
+cors_origins = "https://yourdomain.com,https://admin.yourdomain.com"
+
+# Domain Configuration (optional)
+domain_name = "yourdomain.com"
+
+# Email Configuration
+email_smtp_host = "smtp.gmail.com"
+email_smtp_port = "587"
+email_username  = "your-email@gmail.com"
+email_password  = "your-app-specific-password"
+email_from      = "noreply@yourdomain.com"

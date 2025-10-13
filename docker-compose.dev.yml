@@ -1,0 +1,220 @@
+version: '3.8'
+
+# Development environment with all services
+# Usage: docker-compose -f docker-compose.dev.yml up
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: carrental_postgres_dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devpassword123
+      POSTGRES_DB: carrental_dev
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./backend/migrations:/docker-entrypoint-initdb.d/migrations
+    networks:
+      - carrental-dev-network
+    restart: unless-stopped
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: carrental_redis_dev
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - carrental-dev-network
+    restart: unless-stopped
+
+  # Adminer for database management
+  adminer:
+    image: adminer:4.8.1
+    container_name: carrental_adminer_dev
+    ports:
+      - "8090:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    networks:
+      - carrental-dev-network
+    depends_on:
+      - postgres
+
+  # Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: carrental_redis_commander_dev
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8091:8081"
+    networks:
+      - carrental-dev-network
+    depends_on:
+      - redis
+
+  # User Service
+  user-service:
+    build:
+      context: ./backend/user-service
+      dockerfile: Dockerfile
+    container_name: carrental_user_service_dev
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: devpassword123
+      DB_NAME: carrental_users
+      PORT: 8080
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      LOG_LEVEL: debug
+      ENV: development
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./backend/user-service:/app
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - carrental-dev-network
+    restart: unless-stopped
+
+  # Vehicle Service
+  vehicle-service:
+    build:
+      context: ./backend/vehicle-service
+      dockerfile: Dockerfile
+    container_name: carrental_vehicle_service_dev
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: devpassword123
+      DB_NAME: carrental_vehicles
+      PORT: 8080
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      LOG_LEVEL: debug
+      ENV: development
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./backend/vehicle-service:/app
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - carrental-dev-network
+    restart: unless-stopped
+
+  # Booking Service
+  booking-service:
+    build:
+      context: ./backend/booking-service
+      dockerfile: Dockerfile
+    container_name: carrental_booking_service_dev
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: devpassword123
+      DB_NAME: carrental_bookings
+      PORT: 8080
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      USER_SERVICE_URL: http://user-service:8080
+      VEHICLE_SERVICE_URL: http://vehicle-service:8080
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      LOG_LEVEL: debug
+      ENV: development
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./backend/booking-service:/app
+    depends_on:
+      - postgres
+      - redis
+      - user-service
+      - vehicle-service
+    networks:
+      - carrental-dev-network
+    restart: unless-stopped
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./backend/notification-service
+      dockerfile: Dockerfile
+    container_name: carrental_notification_service_dev
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: devpassword123
+      DB_NAME: carrental_notifications
+      PORT: 8080
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      EMAIL_SMTP_HOST: smtp.gmail.com
+      EMAIL_SMTP_PORT: 587
+      EMAIL_FROM: dev@carrental.com
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      LOG_LEVEL: debug
+      ENV: development
+    ports:
+      - "8084:8080"
+    volumes:
+      - ./backend/notification-service:/app
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - carrental-dev-network
+    restart: unless-stopped
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: carrental_api_gateway_dev
+    environment:
+      PORT: 8080
+      USER_SERVICE_URL: http://user-service:8080
+      VEHICLE_SERVICE_URL: http://vehicle-service:8080
+      BOOKING_SERVICE_URL: http://booking-service:8080
+      NOTIFICATION_SERVICE_URL: http://notification-service:8080
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      LOG_LEVEL: debug
+      ENV: development
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:5173"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/api-gateway:/app
+    depends_on:
+      - user-service
+      - vehicle-service
+      - booking-service
+      - notification-service
+    networks:
+      - carrental-dev-network
+    restart: unless-stopped
+
+networks:
+  carrental-dev-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
