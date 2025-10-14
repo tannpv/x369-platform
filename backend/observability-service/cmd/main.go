@@ -23,11 +23,11 @@ import (
 
 func main() {
 	serviceName := "observability-service"
-	
+
 	// Initialize logger
 	logConfig := logger.GetDefaultConfig(serviceName)
 	appLogger := logger.New(logConfig)
-	
+
 	// Initialize OpenTelemetry
 	telemetryConfig := telemetry.GetDefaultConfig(serviceName)
 	provider, err := telemetry.InitOpenTelemetry(telemetryConfig)
@@ -77,7 +77,7 @@ func main() {
 
 	// Setup routes
 	router := mux.NewRouter()
-	
+
 	// Add middleware
 	router.Use(middleware.CORSMiddleware)
 	router.Use(middleware.RequestIDMiddleware)
@@ -136,7 +136,7 @@ func main() {
 		appLogger.WithFields(map[string]interface{}{
 			"port": port,
 		}).Info("Observability service starting")
-		
+
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			appLogger.WithError(err).Fatal("Failed to start server")
 		}

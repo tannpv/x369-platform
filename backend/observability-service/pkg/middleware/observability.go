@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -13,12 +14,12 @@ import (
 
 // Middleware provides observability middleware for HTTP handlers
 type Middleware struct {
-	tracer            trace.Tracer
-	meter             metric.Meter
-	httpRequestCount  metric.Int64Counter
+	tracer              trace.Tracer
+	meter               metric.Meter
+	httpRequestCount    metric.Int64Counter
 	httpRequestDuration metric.Float64Histogram
-	httpRequestSize   metric.Int64Histogram
-	httpResponseSize  metric.Int64Histogram
+	httpRequestSize     metric.Int64Histogram
+	httpResponseSize    metric.Int64Histogram
 }
 
 // NewMiddleware creates a new observability middleware
@@ -136,8 +137,8 @@ func (m *Middleware) Handler(next http.Handler) http.Handler {
 // responseWriter wraps http.ResponseWriter to capture status code and response size
 type responseWriter struct {
 	http.ResponseWriter
-	statusCode    int
-	bytesWritten  int64
+	statusCode   int
+	bytesWritten int64
 }
 
 func (rw *responseWriter) WriteHeader(code int) {
@@ -153,11 +154,11 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 
 // DatabaseMiddleware provides observability for database operations
 type DatabaseMiddleware struct {
-	tracer               trace.Tracer
-	meter                metric.Meter
-	dbQueryCount         metric.Int64Counter
-	dbQueryDuration      metric.Float64Histogram
-	dbConnectionsActive  metric.Int64UpDownCounter
+	tracer              trace.Tracer
+	meter               metric.Meter
+	dbQueryCount        metric.Int64Counter
+	dbQueryDuration     metric.Float64Histogram
+	dbConnectionsActive metric.Int64UpDownCounter
 }
 
 // NewDatabaseMiddleware creates a new database observability middleware
@@ -202,7 +203,7 @@ func NewDatabaseMiddleware(serviceName string) (*DatabaseMiddleware, error) {
 // WrapQuery wraps a database query with tracing and metrics
 func (dm *DatabaseMiddleware) WrapQuery(ctx context.Context, operation, query string, args ...interface{}) (context.Context, func(error)) {
 	start := time.Now()
-	
+
 	ctx, span := dm.tracer.Start(ctx, operation,
 		trace.WithAttributes(
 			attribute.String("db.system", "postgresql"),
@@ -213,7 +214,7 @@ func (dm *DatabaseMiddleware) WrapQuery(ctx context.Context, operation, query st
 
 	return ctx, func(err error) {
 		duration := time.Since(start)
-		
+
 		// Add span attributes
 		span.SetAttributes(
 			attribute.Float64("db.duration", duration.Seconds()),
@@ -223,7 +224,7 @@ func (dm *DatabaseMiddleware) WrapQuery(ctx context.Context, operation, query st
 			span.RecordError(err)
 			span.SetStatus(trace.StatusError, err.Error())
 		}
-		
+
 		span.End()
 
 		// Record metrics

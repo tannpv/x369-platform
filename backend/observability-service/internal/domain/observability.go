@@ -36,25 +36,25 @@ const (
 
 // TraceSpan represents a distributed trace span
 type TraceSpan struct {
-	ID           string                 `json:"id" db:"id"`
-	TraceID      string                 `json:"trace_id" db:"trace_id"`
-	ParentSpanID *string                `json:"parent_span_id,omitempty" db:"parent_span_id"`
-	ServiceName  string                 `json:"service_name" db:"service_name"`
-	OperationName string                `json:"operation_name" db:"operation_name"`
-	StartTime    time.Time              `json:"start_time" db:"start_time"`
-	EndTime      *time.Time             `json:"end_time,omitempty" db:"end_time"`
-	Duration     *int64                 `json:"duration,omitempty" db:"duration"` // microseconds
-	Status       SpanStatus             `json:"status" db:"status"`
-	Tags         map[string]interface{} `json:"tags,omitempty" db:"tags"`
-	Logs         []SpanLog              `json:"logs,omitempty" db:"logs"`
+	ID            string                 `json:"id" db:"id"`
+	TraceID       string                 `json:"trace_id" db:"trace_id"`
+	ParentSpanID  *string                `json:"parent_span_id,omitempty" db:"parent_span_id"`
+	ServiceName   string                 `json:"service_name" db:"service_name"`
+	OperationName string                 `json:"operation_name" db:"operation_name"`
+	StartTime     time.Time              `json:"start_time" db:"start_time"`
+	EndTime       *time.Time             `json:"end_time,omitempty" db:"end_time"`
+	Duration      *int64                 `json:"duration,omitempty" db:"duration"` // microseconds
+	Status        SpanStatus             `json:"status" db:"status"`
+	Tags          map[string]interface{} `json:"tags,omitempty" db:"tags"`
+	Logs          []SpanLog              `json:"logs,omitempty" db:"logs"`
 }
 
 // SpanStatus represents the status of a trace span
 type SpanStatus string
 
 const (
-	StatusOK    SpanStatus = "ok"
-	StatusError SpanStatus = "error"
+	StatusOK     SpanStatus = "ok"
+	StatusError  SpanStatus = "error"
 	StatusCancel SpanStatus = "cancelled"
 )
 
@@ -66,14 +66,14 @@ type SpanLog struct {
 
 // Metric represents a custom metric
 type Metric struct {
-	ID          string                 `json:"id" db:"id"`
-	ServiceName string                 `json:"service_name" db:"service_name"`
-	Name        string                 `json:"name" db:"name"`
-	Type        MetricType             `json:"type" db:"type"`
-	Value       float64                `json:"value" db:"value"`
-	Labels      map[string]string      `json:"labels,omitempty" db:"labels"`
-	Timestamp   time.Time              `json:"timestamp" db:"timestamp"`
-	Description *string                `json:"description,omitempty" db:"description"`
+	ID          string            `json:"id" db:"id"`
+	ServiceName string            `json:"service_name" db:"service_name"`
+	Name        string            `json:"name" db:"name"`
+	Type        MetricType        `json:"type" db:"type"`
+	Value       float64           `json:"value" db:"value"`
+	Labels      map[string]string `json:"labels,omitempty" db:"labels"`
+	Timestamp   time.Time         `json:"timestamp" db:"timestamp"`
+	Description *string           `json:"description,omitempty" db:"description"`
 }
 
 // MetricType represents the type of metric
@@ -125,26 +125,26 @@ type LogFilter struct {
 
 // TraceFilter represents filters for trace queries
 type TraceFilter struct {
-	TraceID       *string    `json:"trace_id,omitempty"`
-	ServiceName   *string    `json:"service_name,omitempty"`
-	OperationName *string    `json:"operation_name,omitempty"`
+	TraceID       *string     `json:"trace_id,omitempty"`
+	ServiceName   *string     `json:"service_name,omitempty"`
+	OperationName *string     `json:"operation_name,omitempty"`
 	Status        *SpanStatus `json:"status,omitempty"`
-	StartTime     *time.Time `json:"start_time,omitempty"`
-	EndTime       *time.Time `json:"end_time,omitempty"`
-	MinDuration   *int64     `json:"min_duration,omitempty"` // microseconds
-	MaxDuration   *int64     `json:"max_duration,omitempty"` // microseconds
-	Limit         int        `json:"limit"`
-	Offset        int        `json:"offset"`
+	StartTime     *time.Time  `json:"start_time,omitempty"`
+	EndTime       *time.Time  `json:"end_time,omitempty"`
+	MinDuration   *int64      `json:"min_duration,omitempty"` // microseconds
+	MaxDuration   *int64      `json:"max_duration,omitempty"` // microseconds
+	Limit         int         `json:"limit"`
+	Offset        int         `json:"offset"`
 }
 
 // ObservabilityStats represents observability statistics
 type ObservabilityStats struct {
-	TotalLogs       int64            `json:"total_logs"`
-	TotalTraces     int64            `json:"total_traces"`
-	TotalSpans      int64            `json:"total_spans"`
+	TotalLogs       int64              `json:"total_logs"`
+	TotalTraces     int64              `json:"total_traces"`
+	TotalSpans      int64              `json:"total_spans"`
 	LogsByLevel     map[LogLevel]int64 `json:"logs_by_level"`
-	LogsByService   map[string]int64 `json:"logs_by_service"`
-	TracesByService map[string]int64 `json:"traces_by_service"`
-	ErrorRate       float64          `json:"error_rate"`
-	AvgResponseTime float64          `json:"avg_response_time"`
+	LogsByService   map[string]int64   `json:"logs_by_service"`
+	TracesByService map[string]int64   `json:"traces_by_service"`
+	ErrorRate       float64            `json:"error_rate"`
+	AvgResponseTime float64            `json:"avg_response_time"`
 }

@@ -1,4 +1,4 @@
-package handlers
+package http
 
 import (
 	"encoding/json"
@@ -23,13 +23,13 @@ func NewBookingHandler(bookingUseCase domain.BookingUseCase) *BookingHandler {
 func (h *BookingHandler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/bookings", h.CreateBooking).Methods("POST")
 	router.HandleFunc("/bookings", h.ListBookings).Methods("GET")
-	router.HandleFunc("/bookings/active", h.GetActiveBookings).Methods("GET")
-	router.HandleFunc("/bookings/stats", h.GetBookingStats).Methods("GET")
 	router.HandleFunc("/bookings/{id}", h.GetBooking).Methods("GET")
 	router.HandleFunc("/bookings/{id}", h.UpdateBooking).Methods("PUT")
 	router.HandleFunc("/bookings/{id}/cancel", h.CancelBooking).Methods("POST")
 	router.HandleFunc("/bookings/{id}/start", h.StartBooking).Methods("POST")
 	router.HandleFunc("/bookings/{id}/complete", h.CompleteBooking).Methods("POST")
+	router.HandleFunc("/bookings/active", h.GetActiveBookings).Methods("GET")
+	router.HandleFunc("/bookings/stats", h.GetBookingStats).Methods("GET")
 	router.HandleFunc("/users/{userId}/bookings", h.GetUserBookings).Methods("GET")
 	router.HandleFunc("/vehicles/{vehicleId}/bookings", h.GetVehicleBookings).Methods("GET")
 }

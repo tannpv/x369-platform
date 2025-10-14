@@ -34,14 +34,14 @@ func (r *postgresVehicleRepository) Create(ctx context.Context, vehicle *domain.
 			mileage, features, created_at, updated_at
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
 	`
-	
+
 	_, err = r.db.ExecContext(ctx, query,
 		vehicle.ID, vehicle.Make, vehicle.Model, vehicle.Year, vehicle.LicensePlate,
 		vehicle.VIN, vehicle.Color, vehicle.Status, vehicle.Location.Latitude,
 		vehicle.Location.Longitude, vehicle.Location.Address, vehicle.BatteryLevel,
 		vehicle.FuelLevel, vehicle.Mileage, featuresJSON, vehicle.CreatedAt, vehicle.UpdatedAt,
 	)
-	
+
 	return err
 }
 
@@ -52,28 +52,28 @@ func (r *postgresVehicleRepository) GetByID(ctx context.Context, id string) (*do
 			   mileage, features, created_at, updated_at
 		FROM vehicles WHERE id = $1
 	`
-	
+
 	vehicle := &domain.Vehicle{}
 	var featuresJSON []byte
-	
+
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&vehicle.ID, &vehicle.Make, &vehicle.Model, &vehicle.Year, &vehicle.LicensePlate,
 		&vehicle.VIN, &vehicle.Color, &vehicle.Status, &vehicle.Location.Latitude,
 		&vehicle.Location.Longitude, &vehicle.Location.Address, &vehicle.BatteryLevel,
 		&vehicle.FuelLevel, &vehicle.Mileage, &featuresJSON, &vehicle.CreatedAt, &vehicle.UpdatedAt,
 	)
-	
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("vehicle not found")
 		}
 		return nil, err
 	}
-	
+
 	if err := json.Unmarshal(featuresJSON, &vehicle.Features); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal features: %w", err)
 	}
-	
+
 	return vehicle, nil
 }
 
@@ -84,28 +84,28 @@ func (r *postgresVehicleRepository) GetByLicensePlate(ctx context.Context, licen
 			   mileage, features, created_at, updated_at
 		FROM vehicles WHERE license_plate = $1
 	`
-	
+
 	vehicle := &domain.Vehicle{}
 	var featuresJSON []byte
-	
+
 	err := r.db.QueryRowContext(ctx, query, licensePlate).Scan(
 		&vehicle.ID, &vehicle.Make, &vehicle.Model, &vehicle.Year, &vehicle.LicensePlate,
 		&vehicle.VIN, &vehicle.Color, &vehicle.Status, &vehicle.Location.Latitude,
 		&vehicle.Location.Longitude, &vehicle.Location.Address, &vehicle.BatteryLevel,
 		&vehicle.FuelLevel, &vehicle.Mileage, &featuresJSON, &vehicle.CreatedAt, &vehicle.UpdatedAt,
 	)
-	
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("vehicle not found")
 		}
 		return nil, err
 	}
-	
+
 	if err := json.Unmarshal(featuresJSON, &vehicle.Features); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal features: %w", err)
 	}
-	
+
 	return vehicle, nil
 }
 
@@ -119,49 +119,49 @@ func (r *postgresVehicleRepository) Update(ctx context.Context, id string, updat
 		args = append(args, *updates.Make)
 		argIndex++
 	}
-	
+
 	if updates.Model != nil {
 		setParts = append(setParts, fmt.Sprintf("model = $%d", argIndex))
 		args = append(args, *updates.Model)
 		argIndex++
 	}
-	
+
 	if updates.Year != nil {
 		setParts = append(setParts, fmt.Sprintf("year = $%d", argIndex))
 		args = append(args, *updates.Year)
 		argIndex++
 	}
-	
+
 	if updates.Color != nil {
 		setParts = append(setParts, fmt.Sprintf("color = $%d", argIndex))
 		args = append(args, *updates.Color)
 		argIndex++
 	}
-	
+
 	if updates.Status != nil {
 		setParts = append(setParts, fmt.Sprintf("status = $%d", argIndex))
 		args = append(args, *updates.Status)
 		argIndex++
 	}
-	
+
 	if updates.BatteryLevel != nil {
 		setParts = append(setParts, fmt.Sprintf("battery_level = $%d", argIndex))
 		args = append(args, *updates.BatteryLevel)
 		argIndex++
 	}
-	
+
 	if updates.FuelLevel != nil {
 		setParts = append(setParts, fmt.Sprintf("fuel_level = $%d", argIndex))
 		args = append(args, *updates.FuelLevel)
 		argIndex++
 	}
-	
+
 	if updates.Mileage != nil {
 		setParts = append(setParts, fmt.Sprintf("mileage = $%d", argIndex))
 		args = append(args, *updates.Mileage)
 		argIndex++
 	}
-	
+
 	if updates.Features != nil {
 		featuresJSON, err := json.Marshal(updates.Features)
 		if err != nil {
@@ -191,18 +191,18 @@ func (r *postgresVehicleRepository) Update(ctx context.Context, id string, updat
 
 	vehicle := &domain.Vehicle{}
 	var featuresJSON []byte
-	
+
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(
 		&vehicle.ID, &vehicle.Make, &vehicle.Model, &vehicle.Year, &vehicle.LicensePlate,
 		&vehicle.VIN, &vehicle.Color, &vehicle.Status, &vehicle.Location.Latitude,
 		&vehicle.Location.Longitude, &vehicle.Location.Address, &vehicle.BatteryLevel,
 		&vehicle.FuelLevel, &vehicle.Mileage, &featuresJSON, &vehicle.CreatedAt, &vehicle.UpdatedAt,
 	)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if err := json.Unmarshal(featuresJSON, &vehicle.Features); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal features: %w", err)
 	}
@@ -226,31 +226,31 @@ func (r *postgresVehicleRepository) List(ctx context.Context, filter *domain.Veh
 		args = append(args, *filter.Status)
 		argIndex++
 	}
-	
+
 	if filter.Make != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("make ILIKE $%d", argIndex))
 		args = append(args, "%"+*filter.Make+"%")
 		argIndex++
 	}
-	
+
 	if filter.Model != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("model ILIKE $%d", argIndex))
 		args = append(args, "%"+*filter.Model+"%")
 		argIndex++
 	}
-	
+
 	if filter.Year != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("year = $%d", argIndex))
 		args = append(args, *filter.Year)
 		argIndex++
 	}
-	
+
 	if filter.MinYear != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("year >= $%d", argIndex))
 		args = append(args, *filter.MinYear)
 		argIndex++
 	}
-	
+
 	if filter.MaxYear != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("year <= $%d", argIndex))
 		args = append(args, *filter.MaxYear)
@@ -263,14 +263,14 @@ func (r *postgresVehicleRepository) List(ctx context.Context, filter *domain.Veh
 			   mileage, features, created_at, updated_at
 		FROM vehicles
 	`
-	
+
 	if len(whereConditions) > 0 {
 		query += " WHERE " + strings.Join(whereConditions, " AND ")
 	}
-	
+
 	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d OFFSET $%d", argIndex, argIndex+1)
 	args = append(args, filter.Limit, filter.Offset)
-	
+
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -281,7 +281,7 @@ func (r *postgresVehicleRepository) List(ctx context.Context, filter *domain.Veh
 	for rows.Next() {
 		vehicle := &domain.Vehicle{}
 		var featuresJSON []byte
-		
+
 		err := rows.Scan(
 			&vehicle.ID, &vehicle.Make, &vehicle.Model, &vehicle.Year, &vehicle.LicensePlate,
 			&vehicle.VIN, &vehicle.Color, &vehicle.Status, &vehicle.Location.Latitude,
@@ -291,11 +291,11 @@ func (r *postgresVehicleRepository) List(ctx context.Context, filter *domain.Veh
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if err := json.Unmarshal(featuresJSON, &vehicle.Features); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal features: %w", err)
 		}
-		
+
 		vehicles = append(vehicles, vehicle)
 	}
 
@@ -312,19 +312,19 @@ func (r *postgresVehicleRepository) Count(ctx context.Context, filter *domain.Ve
 		args = append(args, *filter.Status)
 		argIndex++
 	}
-	
+
 	if filter.Make != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("make ILIKE $%d", argIndex))
 		args = append(args, "%"+*filter.Make+"%")
 		argIndex++
 	}
-	
+
 	if filter.Model != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("model ILIKE $%d", argIndex))
 		args = append(args, "%"+*filter.Model+"%")
 		argIndex++
 	}
-	
+
 	if filter.Year != nil {
 		whereConditions = append(whereConditions, fmt.Sprintf("year = $%d", argIndex))
 		args = append(args, *filter.Year)
@@ -332,11 +332,11 @@ func (r *postgresVehicleRepository) Count(ctx context.Context, filter *domain.Ve
 	}
 
 	query := "SELECT COUNT(*) FROM vehicles"
-	
+
 	if len(whereConditions) > 0 {
 		query += " WHERE " + strings.Join(whereConditions, " AND ")
 	}
-	
+
 	var count int64
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(&count)
 	return count, err
@@ -348,10 +348,10 @@ func (r *postgresVehicleRepository) UpdateLocation(ctx context.Context, id strin
 		SET latitude = $1, longitude = $2, address = $3, updated_at = $4 
 		WHERE id = $5
 	`
-	
-	_, err := r.db.ExecContext(ctx, query, 
+
+	_, err := r.db.ExecContext(ctx, query,
 		location.Latitude, location.Longitude, location.Address, time.Now(), id)
-	
+
 	return err
 }
 
@@ -390,9 +390,9 @@ func (r *postgresVehicleRepository) GetAvailableVehicles(ctx context.Context, fi
 		FROM vehicles
 		WHERE ` + strings.Join(whereConditions, " AND ") +
 		fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d OFFSET $%d", argIndex, argIndex+1)
-	
+
 	args = append(args, filter.Limit, filter.Offset)
-	
+
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -403,7 +403,7 @@ func (r *postgresVehicleRepository) GetAvailableVehicles(ctx context.Context, fi
 	for rows.Next() {
 		vehicle := &domain.Vehicle{}
 		var featuresJSON []byte
-		
+
 		err := rows.Scan(
 			&vehicle.ID, &vehicle.Make, &vehicle.Model, &vehicle.Year, &vehicle.LicensePlate,
 			&vehicle.VIN, &vehicle.Color, &vehicle.Status, &vehicle.Location.Latitude,
@@ -413,11 +413,11 @@ func (r *postgresVehicleRepository) GetAvailableVehicles(ctx context.Context, fi
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if err := json.Unmarshal(featuresJSON, &vehicle.Features); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal features: %w", err)
 		}
-		
+
 		vehicles = append(vehicles, vehicle)
 	}
 
@@ -426,33 +426,33 @@ func (r *postgresVehicleRepository) GetAvailableVehicles(ctx context.Context, fi
 
 func (r *postgresVehicleRepository) GetStats(ctx context.Context) (*domain.VehicleStats, error) {
 	stats := &domain.VehicleStats{}
-	
+
 	// Get total vehicles count
 	err := r.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM vehicles").Scan(&stats.TotalVehicles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get total vehicles: %w", err)
 	}
-	
+
 	// Get available vehicles count
-	err = r.db.QueryRowContext(ctx, 
+	err = r.db.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM vehicles WHERE status = 'available'").Scan(&stats.AvailableVehicles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get available vehicles: %w", err)
 	}
-	
+
 	// Get in-use vehicles count (rented)
-	err = r.db.QueryRowContext(ctx, 
+	err = r.db.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM vehicles WHERE status = 'rented'").Scan(&stats.InUseVehicles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get in-use vehicles: %w", err)
 	}
-	
+
 	// Get maintenance vehicles count
-	err = r.db.QueryRowContext(ctx, 
+	err = r.db.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM vehicles WHERE status = 'maintenance'").Scan(&stats.MaintenanceVehicles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get maintenance vehicles: %w", err)
 	}
-	
+
 	return stats, nil
 }

@@ -21,11 +21,11 @@ type Logger struct {
 
 // Config holds the logger configuration
 type Config struct {
-	Level       string `json:"level"`       // debug, info, warn, error
-	Format      string `json:"format"`      // json, text
+	Level       string `json:"level"`  // debug, info, warn, error
+	Format      string `json:"format"` // json, text
 	ServiceName string `json:"service_name"`
 	Environment string `json:"environment"`
-	Output      string `json:"output"`      // stdout, file
+	Output      string `json:"output"` // stdout, file
 	FilePath    string `json:"file_path"`
 }
 
@@ -226,7 +226,7 @@ func (l *Logger) LogBusinessEvent(ctx context.Context, eventType string, entityI
 		"entity_id":  entityID,
 		"type":       "business_event",
 	}
-	
+
 	for k, v := range details {
 		fields[k] = v
 	}

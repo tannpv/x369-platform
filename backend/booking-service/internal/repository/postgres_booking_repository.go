@@ -8,8 +8,9 @@ import (
 	"time"
 
 	"booking-service/internal/domain"
-	"github.com/jmoiron/sqlx"
+
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 )
 
 type postgresBookingRepository struct {
