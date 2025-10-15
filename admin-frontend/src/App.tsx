@@ -5,6 +5,7 @@ import EcommerceDashboard from './pages/EcommerceDashboard'
 import WidgetsPage from './pages/WidgetsPage'
 import { VehicleManagementPage } from './features/vehicles'
 import { UserManagementPage } from './features/users'
+import { BookingManagementPage } from './features/bookings'
 
 // Placeholder components for other pages
 function Analytics() {
@@ -31,55 +32,11 @@ function Analytics() {
   )
 }
 
-function Users() {
-  return (
-    <div className="space-y-6">
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">User Management</h2>
-          <p className="text-gray-600 dark:text-gray-400">Manage your platform users</p>
-        </div>
-        <div className="admin-card-body">
-          <div className="h-96 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">👥</span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">User Management</h3>
-              <p className="text-gray-600 dark:text-gray-400">User management features in development</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 
 
-function Bookings() {
-  return (
-    <div className="space-y-6">
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Booking Management</h2>
-          <p className="text-gray-600 dark:text-gray-400">Handle customer bookings and reservations</p>
-        </div>
-        <div className="admin-card-body">
-          <div className="h-96 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📅</span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Booking System</h3>
-              <p className="text-gray-600 dark:text-gray-400">Comprehensive booking management in progress</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+
+
 
 function GenericPage({ title, description, emoji, gradient }: { title: string, description: string, emoji: string, gradient: string }) {
   return (
@@ -124,7 +81,7 @@ function App() {
         <Route path="pages/faq" element={<GenericPage title="FAQ" description="Frequently asked questions" emoji="❓" gradient="bg-gradient-to-r from-violet-50 to-purple-50" />} />
         <Route path="users" element={<UserManagementPage />} />
         <Route path="vehicles" element={<VehicleManagementPage />} />
-        <Route path="bookings" element={<Bookings />} />
+        <Route path="bookings" element={<BookingManagementPage />} />
         <Route 
           path="payments" 
           element={
