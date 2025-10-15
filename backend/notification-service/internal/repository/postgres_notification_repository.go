@@ -3,14 +3,15 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
-	"encoding/json"
 
 	"notification-service/internal/domain"
-	"github.com/jmoiron/sqlx"
+
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 )
 
 type postgresNotificationRepository struct {

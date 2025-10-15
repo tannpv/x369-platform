@@ -33,16 +33,16 @@ type VehicleUseCase interface {
 
 // VehicleFilter represents filters for vehicle queries
 type VehicleFilter struct {
-	Status     *VehicleStatus `json:"status,omitempty"`
-	Make       *string        `json:"make,omitempty"`
-	Model      *string        `json:"model,omitempty"`
-	Year       *int           `json:"year,omitempty"`
-	MinYear    *int           `json:"min_year,omitempty"`
-	MaxYear    *int           `json:"max_year,omitempty"`
-	Location   *Location      `json:"location,omitempty"`
-	Radius     *float64       `json:"radius,omitempty"` // in kilometers
-	Limit      int            `json:"limit"`
-	Offset     int            `json:"offset"`
+	Status   *VehicleStatus `json:"status,omitempty"`
+	Make     *string        `json:"make,omitempty"`
+	Model    *string        `json:"model,omitempty"`
+	Year     *int           `json:"year,omitempty"`
+	MinYear  *int           `json:"min_year,omitempty"`
+	MaxYear  *int           `json:"max_year,omitempty"`
+	Location *Location      `json:"location,omitempty"`
+	Radius   *float64       `json:"radius,omitempty"` // in kilometers
+	Limit    int            `json:"limit"`
+	Offset   int            `json:"offset"`
 }
 
 // AvailabilityFilter represents filters for available vehicles

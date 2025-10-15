@@ -42,14 +42,14 @@ type Location struct {
 
 // CreateVehicleRequest represents the request to create a vehicle
 type CreateVehicleRequest struct {
-	Make         string    `json:"make" validate:"required"`
-	Model        string    `json:"model" validate:"required"`
-	Year         int       `json:"year" validate:"required,min=1900,max=2030"`
-	LicensePlate string    `json:"license_plate" validate:"required"`
-	VIN          string    `json:"vin" validate:"required"`
-	Color        string    `json:"color" validate:"required"`
-	Location     Location  `json:"location" validate:"required"`
-	Features     []string  `json:"features"`
+	Make         string   `json:"make" validate:"required"`
+	Model        string   `json:"model" validate:"required"`
+	Year         int      `json:"year" validate:"required,min=1900,max=2030"`
+	LicensePlate string   `json:"license_plate" validate:"required"`
+	VIN          string   `json:"vin" validate:"required"`
+	Color        string   `json:"color" validate:"required"`
+	Location     Location `json:"location" validate:"required"`
+	Features     []string `json:"features"`
 }
 
 // UpdateVehicleRequest represents the request to update a vehicle

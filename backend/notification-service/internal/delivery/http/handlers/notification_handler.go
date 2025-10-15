@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"notification-service/internal/domain"
+
 	"github.com/gorilla/mux"
 )
 

@@ -6,18 +6,18 @@ import (
 
 // Notification represents a notification in the system
 type Notification struct {
-	ID        string             `json:"id" db:"id"`
-	UserID    string             `json:"user_id" db:"user_id"`
-	Type      NotificationType   `json:"type" db:"type"`
-	Title     string             `json:"title" db:"title"`
-	Message   string             `json:"message" db:"message"`
-	Status    NotificationStatus `json:"status" db:"status"`
-	Priority  NotificationPriority `json:"priority" db:"priority"`
+	ID        string                 `json:"id" db:"id"`
+	UserID    string                 `json:"user_id" db:"user_id"`
+	Type      NotificationType       `json:"type" db:"type"`
+	Title     string                 `json:"title" db:"title"`
+	Message   string                 `json:"message" db:"message"`
+	Status    NotificationStatus     `json:"status" db:"status"`
+	Priority  NotificationPriority   `json:"priority" db:"priority"`
 	Data      map[string]interface{} `json:"data,omitempty" db:"data"`
-	ReadAt    *time.Time         `json:"read_at,omitempty" db:"read_at"`
-	SentAt    *time.Time         `json:"sent_at,omitempty" db:"sent_at"`
-	CreatedAt time.Time          `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time          `json:"updated_at" db:"updated_at"`
+	ReadAt    *time.Time             `json:"read_at,omitempty" db:"read_at"`
+	SentAt    *time.Time             `json:"sent_at,omitempty" db:"sent_at"`
+	CreatedAt time.Time              `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time              `json:"updated_at" db:"updated_at"`
 }
 
 // NotificationType represents the type of notification
@@ -75,13 +75,13 @@ type UpdateNotificationRequest struct {
 
 // NotificationFilter represents filters for notification queries
 type NotificationFilter struct {
-	UserID   *string             `json:"user_id,omitempty"`
-	Type     *NotificationType   `json:"type,omitempty"`
-	Status   *NotificationStatus `json:"status,omitempty"`
+	UserID   *string               `json:"user_id,omitempty"`
+	Type     *NotificationType     `json:"type,omitempty"`
+	Status   *NotificationStatus   `json:"status,omitempty"`
 	Priority *NotificationPriority `json:"priority,omitempty"`
-	Unread   *bool               `json:"unread,omitempty"`
-	Limit    int                 `json:"limit"`
-	Offset   int                 `json:"offset"`
+	Unread   *bool                 `json:"unread,omitempty"`
+	Limit    int                   `json:"limit"`
+	Offset   int                   `json:"offset"`
 }
 
 // NotificationListResponse represents the response for notification list
@@ -104,12 +104,12 @@ type NotificationStats struct {
 
 // NotificationTemplate represents a notification template
 type NotificationTemplate struct {
-	ID       string           `json:"id" db:"id"`
-	Type     NotificationType `json:"type" db:"type"`
-	Title    string           `json:"title" db:"title"`
-	Message  string           `json:"message" db:"message"`
-	Priority NotificationPriority `json:"priority" db:"priority"`
-	Active   bool             `json:"active" db:"active"`
-	CreatedAt time.Time       `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time       `json:"updated_at" db:"updated_at"`
+	ID        string               `json:"id" db:"id"`
+	Type      NotificationType     `json:"type" db:"type"`
+	Title     string               `json:"title" db:"title"`
+	Message   string               `json:"message" db:"message"`
+	Priority  NotificationPriority `json:"priority" db:"priority"`
+	Active    bool                 `json:"active" db:"active"`
+	CreatedAt time.Time            `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time            `json:"updated_at" db:"updated_at"`
 }

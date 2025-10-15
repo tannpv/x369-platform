@@ -6,16 +6,16 @@ import (
 
 // User represents a user in the system
 type User struct {
-	ID        string    `json:"id" db:"id"`
-	Email     string    `json:"email" db:"email"`
-	Password  string    `json:"-" db:"password"` // Never expose password in JSON
-	FirstName string    `json:"first_name" db:"first_name"`
-	LastName  string    `json:"last_name" db:"last_name"`
-	Phone     string    `json:"phone" db:"phone"`
-	Role      UserRole  `json:"role" db:"role"`
+	ID        string     `json:"id" db:"id"`
+	Email     string     `json:"email" db:"email"`
+	Password  string     `json:"-" db:"password"` // Never expose password in JSON
+	FirstName string     `json:"first_name" db:"first_name"`
+	LastName  string     `json:"last_name" db:"last_name"`
+	Phone     string     `json:"phone" db:"phone"`
+	Role      UserRole   `json:"role" db:"role"`
 	Status    UserStatus `json:"status" db:"status"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
 }
 
 // UserRole represents user roles
@@ -30,8 +30,8 @@ const (
 type UserStatus string
 
 const (
-	StatusActive   UserStatus = "active"
-	StatusInactive UserStatus = "inactive"
+	StatusActive    UserStatus = "active"
+	StatusInactive  UserStatus = "inactive"
 	StatusSuspended UserStatus = "suspended"
 )
 

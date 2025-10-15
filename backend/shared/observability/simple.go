@@ -24,7 +24,7 @@ func NewSimpleObservability(serviceName, environment string) *SimpleObservabilit
 
 // LogRequest logs HTTP request details
 func (so *SimpleObservability) LogRequest(method, path, clientIP string, statusCode int, duration time.Duration) {
-	log.Printf("[%s] %s %s %s - %d (%v)", 
+	log.Printf("[%s] %s %s %s - %d (%v)",
 		so.ServiceName, method, path, clientIP, statusCode, duration)
 }
 
@@ -34,8 +34,8 @@ func (so *SimpleObservability) LogOperation(ctx context.Context, operation strin
 	if err != nil {
 		status = "ERROR"
 	}
-	
-	log.Printf("[%s] Operation: %s - %s (%v) %v", 
+
+	log.Printf("[%s] Operation: %s - %s (%v) %v",
 		so.ServiceName, operation, status, duration, func() string {
 			if err != nil {
 				return fmt.Sprintf("Error: %v", err)
@@ -44,14 +44,14 @@ func (so *SimpleObservability) LogOperation(ctx context.Context, operation strin
 		}())
 }
 
-// LogDatabaseQuery logs database query details  
+// LogDatabaseQuery logs database query details
 func (so *SimpleObservability) LogDatabaseQuery(operation string, duration time.Duration, err error) {
 	status := "SUCCESS"
 	if err != nil {
 		status = "ERROR"
 	}
-	
-	log.Printf("[%s] DB %s - %s (%v) %v", 
+
+	log.Printf("[%s] DB %s - %s (%v) %v",
 		so.ServiceName, operation, status, duration, func() string {
 			if err != nil {
 				return fmt.Sprintf("Error: %v", err)
@@ -64,22 +64,22 @@ func (so *SimpleObservability) LogDatabaseQuery(operation string, duration time.
 func (so *SimpleObservability) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		
+
 		// Create response writer wrapper
 		wrapper := &responseWriter{
 			ResponseWriter: w,
 			statusCode:     200,
 		}
-		
+
 		// Get client IP
 		clientIP := r.RemoteAddr
 		if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
 			clientIP = forwarded
 		}
-		
+
 		// Serve request
 		next.ServeHTTP(wrapper, r)
-		
+
 		// Log request
 		duration := time.Since(start)
 		so.LogRequest(r.Method, r.URL.Path, clientIP, wrapper.statusCode, duration)
@@ -102,7 +102,7 @@ func (so *SimpleObservability) TimedOperation(ctx context.Context, operationName
 	start := time.Now()
 	err := fn()
 	duration := time.Since(start)
-	
+
 	so.LogOperation(ctx, operationName, duration, err)
 	return err
 }
@@ -112,7 +112,7 @@ func (so *SimpleObservability) TimedDatabaseOperation(operationName string, fn f
 	start := time.Now()
 	err := fn()
 	duration := time.Since(start)
-	
+
 	so.LogDatabaseQuery(operationName, duration, err)
 	return err
 }
@@ -174,12 +174,12 @@ func (so *SimpleObservability) MetricsHandler() http.HandlerFunc {
 		metrics := so.GetMetrics()
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		
+
 		avgDuration := float64(0)
 		if metrics.RequestCount > 0 {
 			avgDuration = float64(metrics.TotalDuration.Nanoseconds()) / float64(metrics.RequestCount) / 1000000 // ms
 		}
-		
+
 		fmt.Fprintf(w, `{
 			"service": "%s",
 			"requests_total": %d,

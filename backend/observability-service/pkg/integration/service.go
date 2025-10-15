@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jmoiron/sqlx"
+	"go.opentelemetry.io/contrib/instrumentation/database/sql/otelsql"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
-	"go.opentelemetry.io/contrib/instrumentation/database/sql/otelsql"
-	"github.com/jmoiron/sqlx"
 )
 
 // ServiceObservability provides observability integration for services
@@ -58,7 +58,7 @@ func (so *ServiceObservability) WrapDatabase(driverName, dataSourceName string) 
 	driverName = otelsql.Register(driverName, otelsql.WithAttributes(
 		attribute.String("db.system", "postgresql"),
 	))
-	
+
 	// Connect using the wrapped driver
 	db, err := sqlx.Connect(driverName, dataSourceName)
 	if err != nil {
@@ -94,12 +94,12 @@ func (so *ServiceObservability) LogOperationStart(ctx context.Context, operation
 	return ctx, func(err error) {
 		duration := time.Since(start)
 		span.SetAttributes(attribute.Float64("duration_ms", float64(duration.Nanoseconds())/1000000))
-		
+
 		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(trace.StatusError, err.Error())
 		}
-		
+
 		span.End()
 	}
 }
@@ -109,7 +109,7 @@ func (so *ServiceObservability) BusinessOperation(ctx context.Context, operation
 	ctx, finish := so.LogOperationStart(ctx, operationName, map[string]interface{}{
 		"operation.type": "business",
 	})
-	
+
 	err := fn(ctx)
 	finish(err)
 	return err
@@ -121,7 +121,7 @@ func (so *ServiceObservability) DatabaseOperation(ctx context.Context, operation
 		"operation.type": "database",
 		"db.operation":   operation,
 	})
-	
+
 	err := fn(ctx)
 	finish(err)
 	return err
@@ -130,11 +130,11 @@ func (so *ServiceObservability) DatabaseOperation(ctx context.Context, operation
 // ExternalAPICall wraps an external API call with observability
 func (so *ServiceObservability) ExternalAPICall(ctx context.Context, serviceName, endpoint string, fn func(context.Context) error) error {
 	ctx, finish := so.LogOperationStart(ctx, "http.client."+serviceName, map[string]interface{}{
-		"operation.type":    "http_client",
-		"http.client.name":  serviceName,
+		"operation.type":       "http_client",
+		"http.client.name":     serviceName,
 		"http.client.endpoint": endpoint,
 	})
-	
+
 	err := fn(ctx)
 	finish(err)
 	return err

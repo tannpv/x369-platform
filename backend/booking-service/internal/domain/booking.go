@@ -38,15 +38,15 @@ const (
 
 // CreateBookingRequest represents the request to create a booking
 type CreateBookingRequest struct {
-	UserID       string    `json:"user_id" validate:"required"`
-	VehicleID    string    `json:"vehicle_id" validate:"required"`
-	StartTime    time.Time `json:"start_time" validate:"required"`
-	PickupLat    float64   `json:"pickup_latitude" validate:"required,min=-90,max=90"`
-	PickupLng    float64   `json:"pickup_longitude" validate:"required,min=-180,max=180"`
-	PickupAddr   string    `json:"pickup_address" validate:"required"`
-	DropoffLat   *float64  `json:"dropoff_latitude,omitempty" validate:"omitempty,min=-90,max=90"`
-	DropoffLng   *float64  `json:"dropoff_longitude,omitempty" validate:"omitempty,min=-180,max=180"`
-	DropoffAddr  *string   `json:"dropoff_address,omitempty"`
+	UserID      string    `json:"user_id" validate:"required"`
+	VehicleID   string    `json:"vehicle_id" validate:"required"`
+	StartTime   time.Time `json:"start_time" validate:"required"`
+	PickupLat   float64   `json:"pickup_latitude" validate:"required,min=-90,max=90"`
+	PickupLng   float64   `json:"pickup_longitude" validate:"required,min=-180,max=180"`
+	PickupAddr  string    `json:"pickup_address" validate:"required"`
+	DropoffLat  *float64  `json:"dropoff_latitude,omitempty" validate:"omitempty,min=-90,max=90"`
+	DropoffLng  *float64  `json:"dropoff_longitude,omitempty" validate:"omitempty,min=-180,max=180"`
+	DropoffAddr *string   `json:"dropoff_address,omitempty"`
 }
 
 // UpdateBookingRequest represents the request to update a booking

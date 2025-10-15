@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"booking-service/internal/domain"
+
 	"github.com/gorilla/mux"
 )
 

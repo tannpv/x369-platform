@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	
+
 	httpHandler "user-service/internal/delivery/http"
 )
 
@@ -48,10 +48,10 @@ func main() {
 
 	// Setup routes
 	router := mux.NewRouter()
-	
+
 	// Add CORS middleware
 	router.Use(corsMiddleware)
-	
+
 	// Health check
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

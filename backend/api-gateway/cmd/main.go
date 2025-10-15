@@ -44,13 +44,13 @@ func main() {
 	// User service routes
 	setupServiceProxy(api, "/users", config.UserServiceURL)
 	setupServiceProxy(api, "/auth", config.UserServiceURL)
-	
+
 	// Stats routes - these need special handling to avoid conflicts
 	setupStatsServiceProxy(api, "/v1/users/stats", config.UserServiceURL, "/stats/users")
 	setupStatsServiceProxy(api, "/v1/vehicles/stats", config.VehicleServiceURL, "/vehicles/stats")
 	setupStatsServiceProxy(api, "/v1/bookings/stats", config.BookingServiceURL, "/api/v1/bookings/stats")
 
-	// Vehicle service routes  
+	// Vehicle service routes
 	setupServiceProxy(api, "/vehicles", config.VehicleServiceURL)
 
 	// Booking service routes
@@ -67,7 +67,7 @@ func main() {
 	log.Printf("  Vehicles: %s", config.VehicleServiceURL)
 	log.Printf("  Bookings: %s", config.BookingServiceURL)
 	log.Printf("  Notifications: %s", config.NotificationServiceURL)
-	
+
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
@@ -78,7 +78,7 @@ func setupServiceProxy(router *mux.Router, path, serviceURL string) {
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
-	
+
 	// Modify request to remove /api prefix before forwarding
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
@@ -97,7 +97,7 @@ func setupStatsServiceProxy(router *mux.Router, apiPath, serviceURL, servicePath
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
-	
+
 	// Modify request to route to specific service path
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
@@ -118,21 +118,8 @@ func getEnv(key, defaultValue string) string {
 
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Allow requests from React dev server
-		origin := r.Header.Get("Origin")
-		allowedOrigins := []string{
-			"http://localhost:3000",
-			"http://localhost:5173", // Vite dev server
-			"http://localhost:5174",
-		}
-		
-		for _, allowedOrigin := range allowedOrigins {
-			if origin == allowedOrigin {
-				w.Header().Set("Access-Control-Allow-Origin", origin)
-				break
-			}
-		}
-		
+		// Allow all origins for development
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")

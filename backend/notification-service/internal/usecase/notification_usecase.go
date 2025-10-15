@@ -9,9 +9,9 @@ import (
 )
 
 type notificationUseCase struct {
-	notificationRepo domain.NotificationRepository
+	notificationRepo   domain.NotificationRepository
 	notificationSender domain.NotificationSender
-	userService      domain.UserService
+	userService        domain.UserService
 }
 
 func NewNotificationUseCase(

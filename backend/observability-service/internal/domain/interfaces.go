@@ -42,21 +42,21 @@ type ObservabilityUseCase interface {
 	GetLogs(ctx context.Context, filter *LogFilter) ([]*LogEntry, error)
 	SearchLogs(ctx context.Context, query string, filter *LogFilter) ([]*LogEntry, error)
 	GetLogsByTrace(ctx context.Context, traceID string) ([]*LogEntry, error)
-	
+
 	// Tracing
 	StartTrace(ctx context.Context, req *CreateTraceRequest) (*TraceSpan, error)
 	FinishSpan(ctx context.Context, spanID string, status SpanStatus, tags map[string]interface{}) error
 	GetTrace(ctx context.Context, traceID string) ([]*TraceSpan, error)
 	ListTraces(ctx context.Context, filter *TraceFilter) ([]*TraceSpan, error)
-	
+
 	// Metrics
 	RecordMetric(ctx context.Context, serviceName, name string, metricType MetricType, value float64, labels map[string]string) error
 	GetMetrics(ctx context.Context, serviceName, metricName string, startTime, endTime time.Time) ([]*Metric, error)
-	
+
 	// Analytics
 	GetStats(ctx context.Context, startTime, endTime time.Time) (*ObservabilityStats, error)
 	GetServiceHealth(ctx context.Context, serviceName string) (*ServiceHealth, error)
-	
+
 	// Maintenance
 	CleanupOldData(ctx context.Context, retentionDays int) error
 }
@@ -107,11 +107,11 @@ type Alert struct {
 type AlertType string
 
 const (
-	AlertTypeErrorRate     AlertType = "error_rate"
-	AlertTypeResponseTime  AlertType = "response_time"
-	AlertTypeRequestCount  AlertType = "request_count"
-	AlertTypeServiceDown   AlertType = "service_down"
-	AlertTypeCustomMetric  AlertType = "custom_metric"
+	AlertTypeErrorRate    AlertType = "error_rate"
+	AlertTypeResponseTime AlertType = "response_time"
+	AlertTypeRequestCount AlertType = "request_count"
+	AlertTypeServiceDown  AlertType = "service_down"
+	AlertTypeCustomMetric AlertType = "custom_metric"
 )
 
 // AlertSeverity represents the severity of an alert

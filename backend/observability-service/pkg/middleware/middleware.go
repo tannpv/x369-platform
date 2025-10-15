@@ -9,8 +9,8 @@ import (
 	"observability-service/pkg/logger"
 	"observability-service/pkg/telemetry"
 
-	"go.opentelemetry.io/otel/trace"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // ObservabilityMiddleware provides comprehensive observability for HTTP requests
@@ -31,22 +31,22 @@ func NewObservabilityMiddleware(log *logger.Logger, provider *telemetry.Provider
 func (m *ObservabilityMiddleware) Middleware(next http.Handler) http.Handler {
 	// Wrap with OpenTelemetry middleware first
 	otlHandler := otelmux.Middleware("http-server")(next)
-	
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		
+
 		// Create response writer wrapper to capture status code
 		wrapped := &responseWriter{
 			ResponseWriter: w,
 			statusCode:     http.StatusOK,
 		}
-		
+
 		// Get client IP
 		clientIP := getClientIP(r)
-		
+
 		// Process request
 		otlHandler.ServeHTTP(wrapped, r)
-		
+
 		// Log request
 		duration := time.Since(start)
 		m.logger.LogRequest(
@@ -67,7 +67,7 @@ func (m *ObservabilityMiddleware) TraceMiddleware(operationName string) func(htt
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx, span := m.tracer.Start(r.Context(), operationName)
 			defer span.End()
-			
+
 			// Add request attributes
 			telemetry.AddSpanAttributes(span, map[string]interface{}{
 				"http.method":     r.Method,
@@ -75,28 +75,28 @@ func (m *ObservabilityMiddleware) TraceMiddleware(operationName string) func(htt
 				"http.user_agent": r.UserAgent(),
 				"http.client_ip":  getClientIP(r),
 			})
-			
+
 			// Add user ID if available from headers
 			if userID := r.Header.Get("X-User-ID"); userID != "" {
 				telemetry.AddSpanAttributes(span, map[string]interface{}{
 					"user.id": userID,
 				})
 			}
-			
+
 			// Create response writer wrapper
 			wrapped := &responseWriter{
 				ResponseWriter: w,
 				statusCode:     http.StatusOK,
 			}
-			
+
 			// Process request
 			next.ServeHTTP(wrapped, r.WithContext(ctx))
-			
+
 			// Add response attributes
 			telemetry.AddSpanAttributes(span, map[string]interface{}{
 				"http.status_code": wrapped.statusCode,
 			})
-			
+
 			// Set span status based on HTTP status code
 			if wrapped.statusCode >= 400 {
 				span.SetStatus(trace.StatusError, http.StatusText(wrapped.statusCode))
@@ -129,14 +129,14 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 		if requestID == "" {
 			requestID = generateRequestID()
 		}
-		
+
 		// Add to response headers
 		w.Header().Set("X-Request-ID", requestID)
-		
+
 		// Add to context for logging
 		ctx := r.Context()
 		// You could add request ID to context here if needed
-		
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -166,17 +166,17 @@ func getClientIP(r *http.Request) string {
 		}
 		return strings.TrimSpace(xff)
 	}
-	
+
 	// Check X-Real-IP header
 	if xri := r.Header.Get("X-Real-IP"); xri != "" {
 		return strings.TrimSpace(xri)
 	}
-	
+
 	// Fall back to remote address
 	if idx := strings.LastIndex(r.RemoteAddr, ":"); idx != -1 {
 		return r.RemoteAddr[:idx]
 	}
-	
+
 	return r.RemoteAddr
 }
 
