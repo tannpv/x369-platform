@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	httpHandler "vehicle-service/internal/delivery/http"
 	"vehicle-service/internal/repository"
 	"vehicle-service/internal/usecase"
-	httpHandler "vehicle-service/internal/delivery/http"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -23,11 +23,11 @@ func main() {
 		dbUser := getEnv("DB_USER", "postgres")
 		dbPassword := getEnv("DB_PASSWORD", "password")
 		dbName := getEnv("DB_NAME", "vehicle_db")
-		
+
 		dsn = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 			dbHost, dbPort, dbUser, dbPassword, dbName)
 	}
-	
+
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
@@ -56,12 +56,12 @@ func main() {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			
+
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
 				return
 			}
-			
+
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -69,7 +69,7 @@ func main() {
 	// Start server
 	port := getEnv("PORT", "8080")
 	log.Printf("Vehicle service starting on port %s", port)
-	
+
 	if err := http.ListenAndServe(":"+port, router); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}

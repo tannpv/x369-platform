@@ -6,8 +6,8 @@ import (
 	"time"
 	"vehicle-service/internal/domain"
 
-	"github.com/google/uuid"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type vehicleUseCase struct {

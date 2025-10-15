@@ -53,10 +53,10 @@ func main() {
 	// Setup routes
 	router := mux.NewRouter()
 	api := router.PathPrefix("/api/v1").Subrouter()
-	
+
 	// Add CORS middleware
 	router.Use(corsMiddleware)
-	
+
 	bookingHandler.RegisterRoutes(api)
 
 	// Health check

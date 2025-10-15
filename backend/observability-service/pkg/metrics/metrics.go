@@ -11,15 +11,15 @@ import (
 
 // MetricsCollector provides application metrics collection
 type MetricsCollector struct {
-	meter                metric.Meter
-	httpRequestCount     metric.Int64Counter
-	httpRequestDuration  metric.Float64Histogram
-	httpRequestSize      metric.Int64Histogram
-	httpResponseSize     metric.Int64Histogram
-	dbQueryCount         metric.Int64Counter
-	dbQueryDuration      metric.Float64Histogram
-	dbConnectionsActive  metric.Int64UpDownCounter
-	businessMetrics      map[string]metric.Int64Counter
+	meter               metric.Meter
+	httpRequestCount    metric.Int64Counter
+	httpRequestDuration metric.Float64Histogram
+	httpRequestSize     metric.Int64Histogram
+	httpResponseSize    metric.Int64Histogram
+	dbQueryCount        metric.Int64Counter
+	dbQueryDuration     metric.Float64Histogram
+	dbConnectionsActive metric.Int64UpDownCounter
+	businessMetrics     map[string]metric.Int64Counter
 }
 
 // NewMetricsCollector creates a new metrics collector
@@ -111,7 +111,7 @@ func (mc *MetricsCollector) RecordHTTPRequest(ctx context.Context, method, endpo
 
 	mc.httpRequestCount.Add(ctx, 1, labels)
 	mc.httpRequestDuration.Record(ctx, duration.Seconds(), labels)
-	
+
 	if requestSize > 0 {
 		mc.httpRequestSize.Record(ctx, requestSize, labels)
 	}

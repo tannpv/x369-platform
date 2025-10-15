@@ -68,10 +68,10 @@ type User struct {
 
 // UserPreferences represents user notification preferences
 type UserPreferences struct {
-	UserID        string `json:"user_id"`
-	EmailEnabled  bool   `json:"email_enabled"`
-	SMSEnabled    bool   `json:"sms_enabled"`
-	PushEnabled   bool   `json:"push_enabled"`
+	UserID       string `json:"user_id"`
+	EmailEnabled bool   `json:"email_enabled"`
+	SMSEnabled   bool   `json:"sms_enabled"`
+	PushEnabled  bool   `json:"push_enabled"`
 }
 
 // BookingEvent represents a booking event for notifications

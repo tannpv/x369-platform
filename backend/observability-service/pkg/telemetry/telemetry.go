@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -14,7 +13,6 @@ import (
 	"go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/instrumentation"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -24,13 +22,13 @@ import (
 
 // Config holds the OpenTelemetry configuration
 type Config struct {
-	ServiceName     string
-	ServiceVersion  string
-	Environment     string
-	JaegerEndpoint  string
-	OTLPEndpoint    string
-	PrometheusPort  string
-	SamplingRate    float64
+	ServiceName    string
+	ServiceVersion string
+	Environment    string
+	JaegerEndpoint string
+	OTLPEndpoint   string
+	PrometheusPort string
+	SamplingRate   float64
 }
 
 // Provider holds the OpenTelemetry providers
@@ -239,13 +237,13 @@ func RecordError(span trace.Span, err error) {
 // GetDefaultConfig returns a default OpenTelemetry configuration
 func GetDefaultConfig(serviceName string) Config {
 	return Config{
-		ServiceName:     serviceName,
-		ServiceVersion:  getEnv("SERVICE_VERSION", "1.0.0"),
-		Environment:     getEnv("ENVIRONMENT", "development"),
-		JaegerEndpoint:  getEnv("JAEGER_ENDPOINT", ""),
-		OTLPEndpoint:    getEnv("OTLP_ENDPOINT", ""),
-		PrometheusPort:  getEnv("PROMETHEUS_PORT", "9090"),
-		SamplingRate:    0.1, // 10% sampling rate
+		ServiceName:    serviceName,
+		ServiceVersion: getEnv("SERVICE_VERSION", "1.0.0"),
+		Environment:    getEnv("ENVIRONMENT", "development"),
+		JaegerEndpoint: getEnv("JAEGER_ENDPOINT", ""),
+		OTLPEndpoint:   getEnv("OTLP_ENDPOINT", ""),
+		PrometheusPort: getEnv("PROMETHEUS_PORT", "9090"),
+		SamplingRate:   0.1, // 10% sampling rate
 	}
 }
 

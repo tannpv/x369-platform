@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 	"time"
 
@@ -14,13 +13,13 @@ import (
 
 // ObservabilityConfig holds configuration for observability integration
 type ObservabilityConfig struct {
-	ServiceName      string `json:"service_name"`
-	Environment      string `json:"environment"`
-	LogLevel         string `json:"log_level"`
-	JaegerEndpoint   string `json:"jaeger_endpoint"`
-	OTLPEndpoint     string `json:"otlp_endpoint"`
-	PrometheusPort   string `json:"prometheus_port"`
-	SamplingRate     float64 `json:"sampling_rate"`
+	ServiceName    string  `json:"service_name"`
+	Environment    string  `json:"environment"`
+	LogLevel       string  `json:"log_level"`
+	JaegerEndpoint string  `json:"jaeger_endpoint"`
+	OTLPEndpoint   string  `json:"otlp_endpoint"`
+	PrometheusPort string  `json:"prometheus_port"`
+	SamplingRate   float64 `json:"sampling_rate"`
 }
 
 // ObservabilityClient provides methods to send observability data
@@ -64,7 +63,7 @@ func SetupObservability(config ObservabilityConfig) (*ObservabilitySetup, error)
 	// Initialize OpenTelemetry tracer
 	// Initialize structured logger
 	// Initialize metrics
-	
+
 	// This would contain the actual initialization logic
 	// For now, return a mock setup
 	return &ObservabilitySetup{
@@ -82,13 +81,13 @@ type ObservabilitySetup struct {
 func WrapDatabase(driverName, dataSourceName string) (*sqlx.DB, error) {
 	// Register the otelsql wrapper for the provided driver
 	driverName = otelsql.Register(driverName)
-	
+
 	// Open the database with the wrapped driver
 	db, err := sqlx.Open(driverName, dataSourceName)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return db, nil
 }
 

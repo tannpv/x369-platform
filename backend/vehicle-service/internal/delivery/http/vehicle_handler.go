@@ -43,7 +43,7 @@ func (h *VehicleHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 		"service":   "vehicle-service",
 		"timestamp": fmt.Sprintf("%d", 1000),
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
@@ -120,7 +120,7 @@ func (h *VehicleHandler) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 // ListVehicles lists vehicles with filtering
 func (h *VehicleHandler) ListVehicles(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	
+
 	filter := &domain.VehicleFilter{
 		Limit:  10,
 		Offset: 0,
@@ -231,7 +231,7 @@ func (h *VehicleHandler) UpdateVehicleBattery(w http.ResponseWriter, r *http.Req
 // GetAvailableVehicles gets available vehicles with filtering
 func (h *VehicleHandler) GetAvailableVehicles(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	
+
 	filter := &domain.AvailabilityFilter{
 		Limit:  10,
 		Offset: 0,
